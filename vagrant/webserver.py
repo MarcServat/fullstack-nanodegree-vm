@@ -1,26 +1,25 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
+import queries
 
 
 class webserverHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
-            if self.path.endswith("/hello"):
+            if self.path.endswith("/restaurant"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
 
+                restaurants = queries.get_restaurants()
                 output = """
                 <html>
                     <body>
                         <h2>Hello</h2>
-                        <form method='POST' enctype='multipart/form-data'
-                        action='/hello'>
-                            <h2>What would you like me to say?</h2>
-                            <input name='message' type='text'>
-                            <input type='submit' value='Submit'>
-                        </form>
-                    </body>
+                """
+                for restaurant in restaurants:
+                    output += "<p>%s</p>" % restaurant.name
+                output += """</body>
                 </html>
                 """
                 self.wfile.write(output)
@@ -34,7 +33,6 @@ class webserverHandler(BaseHTTPRequestHandler):
                 output = ""
                 output += "<html><body>Hola!</body></html>"
                 self.wfile.write(output)
-                print output
                 return
         except IOError:
             self.send_error(404, "File Not Found %s" % self.path)
@@ -45,7 +43,6 @@ class webserverHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-            print ctype                
             if ctype == 'multipart/form-data':
                 fields = cgi.parse_multipart(self.rfile, pdict)
                 messagecontent = fields.get('message')
@@ -63,7 +60,6 @@ class webserverHandler(BaseHTTPRequestHandler):
                     </body>
                 </html>
                 """ % messagecontent[0]
-                print output
                 self.wfile.write(output)
                 return
         except:

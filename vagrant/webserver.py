@@ -21,7 +21,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                             <input type='submit' value='Submit'>
                         </form>
                     </body>
-                <html/>
+                </html>
                 """
                 self.wfile.write(output)
                 return
@@ -42,10 +42,9 @@ class webserverHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             self.send_response(301)
-            self.send_headers()
+            self.end_headers()
 
-            ctype, pdict = cgi.parse_header(
-                self.headers.getheader('content-type'))
+            ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
             print ctype                
             if ctype == 'multipart/form-data':
                 fields = cgi.parse_multipart(self.rfile, pdict)
@@ -62,7 +61,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                             <input type='submit' value='Submit'>
                         </form>
                     </body>
-                <html/>
+                </html>
                 """ % messagecontent[0]
                 print output
                 self.wfile.write(output)

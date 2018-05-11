@@ -19,13 +19,23 @@ def add_restaurant(name):
         session.add(Restaurant(name=name))
         session.commit()
     except Exception as e:
-          e.message
+        print e.message
 
 
 def update_restaurant(name, id):
     try:
         restaurant = session.query(Restaurant).filter(Restaurant.id == id).one()
         restaurant.name = name
+        session.commit()
+    except Exception as e:
+        print e.message
+
+
+def delete_restaurant(id):
+    try:
+        restaurant = session.query(Restaurant).filter(Restaurant.id == id).first()
+        print id
+        session.delete(restaurant)
         session.commit()
     except Exception as e:
         print e.message

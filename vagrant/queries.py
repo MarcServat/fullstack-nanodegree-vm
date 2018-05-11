@@ -19,7 +19,7 @@ def add_restaurant(name):
         session.add(Restaurant(name=name))
         session.commit()
     except Exception as e:
-        print e.message
+          e.message
 
 
 def update_restaurant(name, id):

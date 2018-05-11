@@ -57,6 +57,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                 self.end_headers()
 
                 restaurant_id = self.path.split("/")[2]
+                print "GET restaurant id %s" % restaurant_id 
 
                 output = """
                 <html>
@@ -64,7 +65,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                     <h2>Edit a new restaurant</h2>
                         <form   method='POST'
                                 enctype='multipart/form-data'
-                                action='/restaurants/%s/new'>
+                                action='/restaurants/%s/edit'>
                             <input name='editRestaurant' type='text'
                             placeholder='Edit Restaurant Name'>
                             <input type='submit' value='Edit'>
@@ -90,13 +91,15 @@ class webserverHandler(BaseHTTPRequestHandler):
                     self.send_header('Location', '/restaurants')
                     self.end_headers()
                 return
-            if self.path.endswith("/edit"):
-                restaurant_id = self.path.split("/")[2]                
+            if self.path.endswith("/edit"):        
+                restaurant_id = self.path.split("/")[2]
+                print restaurant_id                                
                 ctype, pdict = cgi.parse_header(
                     self.headers.getheader('content-type'))
                 if ctype == 'multipart/form-data':
                     fields = cgi.parse_multipart(self.rfile, pdict)
                     messagecontent = fields.get('editRestaurant')
+                    print messagecontent
                     queries.update_restaurant(messagecontent[0], restaurant_id)
                     self.send_response(301)
                     self.send_header('Content-type', 'text/html')

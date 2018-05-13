@@ -88,7 +88,7 @@ class webserverHandler(BaseHTTPRequestHandler):
                         <form   method='POST'
                                 enctype='multipart/form-data'
                                 action='/restaurants/%s/delete'>
-                            <input name='deleteRestaurant' 
+                            <input name='deleteRestaurant'
                             type='submit' value='Delete'>
                             <input type='submit' value='Cancel'>
                         <form>

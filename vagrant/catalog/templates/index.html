@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Catalog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <a href="{{url_for('newItem')}}">Add Item</a>
+    {% for category in categories %}
+        <a href="{{ url_for('listItem',
+                    category_name=category.name)}}">{{ category.name }}</a>
+    {% endfor %}
+
+
+    {% for item in items %}
+        <a href="{{ url_for('itemDescription',
+                    item_name=item.name)}}">{{ item.name }}</a>
+    {% endfor %}
+</body>
+</html>

@@ -1,18 +1,54 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem
+from models import Base, Category, Item
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///category.db')
+engine = create_engine('sqlite:///categories.db',
+                       connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine, {'check_same_thread': False})
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
+@app.route('/')
+def home():
+    categories = session.query(Category).all()
+    return render_template('index.html', categories=categories)
+
+
+@app.route('/catalog/new', methods=['GET', 'POST'])
+def newItem():
+    if request.method == 'POST':
+        newItem = Item(title=request.form['title'],
+                       description=request.form['description'],
+                       category_id=request.form['category'])
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('home'))
+    else:
+        categories = session.query(Category).all()
+        return render_template('newitem.html', categories=categories)
+
+
+@app.route('/catalog/<string:category_name>/items')
+def listItem(category_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    items = session.query(Item).filter_by(category_id=category.id).all()
+    return render_template('index.html', items=items)
+
+
+@app.route('/catalog/<string:category_name>/<string:item_name>')
+def itemDescription(category_name, item_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    item = session.query(Item).filter_by(item=item_name).one()
+    if item.category_id == category.id:
+        return render_template('itemdescription.html', item=item)
+
+
+@app.route('/catalog/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     items = session.query(MenuItem).filter_by(

@@ -6,17 +6,29 @@
     <title>Catalog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
-    <a href="{{url_for('newItem')}}">Add Item</a>
-    {% for category in categories %}
-        <a href="{{ url_for('listItem',
-                    category_name=category.name)}}">{{ category.name }}</a>
-    {% endfor %}
-
-
-    {% for item in items %}
-        <a href="{{ url_for('itemDescription',
-                    item_name=item.name)}}">{{ item.name }}</a>
-    {% endfor %}
+<body class="container">
+    <aside>
+        <h3>Categories</h3>
+        {% for category in categories %}
+        <p>
+            <a href="{{ url_for('listItem',
+                    category_name=category.name)}}">{{ category.name }}
+            </a>
+        {% endfor %}
+        </p>
+    </aside>
+    <section>
+        <h3>Latest Items</h3>
+        {% for item in items %}
+            {% for category in categories %}
+                {% if category.id == item.category_id %}
+                    <p>
+                        <a href="#">{{ item.title }}</a>
+                        ({{ category.name }})
+                    </p>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </section>
 </body>
 </html>

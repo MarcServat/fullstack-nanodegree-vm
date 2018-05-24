@@ -16,7 +16,10 @@ session = DBSession()
 @app.route('/')
 def home():
     categories = session.query(Category).all()
-    return render_template('index.html', categories=categories)
+    items = session.query(Item).all()
+    return render_template('index.html',
+                           categories=categories,
+                           items=items)
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
@@ -35,15 +38,20 @@ def newItem():
 
 @app.route('/catalog/<string:category_name>/items')
 def listItem(category_name):
-    category = session.query(Category).filter_by(name=category_name).one()
-    items = session.query(Item).filter_by(category_id=category.id).all()
-    return render_template('index.html', items=items)
+    print category_name
+    categories = session.query(Category).all()
+    items = (session.query(Category, Item).filter_by(
+            name=category_name).one())
+    print(str(items))
+    return render_template('items.html',
+                           categories=categories,
+                           items=items)
 
 
-@app.route('/catalog/<string:category_name>/<string:item_name>')
-def itemDescription(category_name, item_name):
+@app.route('/catalog/<string:category_name>/<string:item_title>')
+def itemDescription(category_name, item_title):
     category = session.query(Category).filter_by(name=category_name).one()
-    item = session.query(Item).filter_by(item=item_name).one()
+    item = session.query(Item).filter_by(title=item_title).one()
     if item.category_id == category.id:
         return render_template('itemdescription.html', item=item)
 

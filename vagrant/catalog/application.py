@@ -38,14 +38,17 @@ def newItem():
 
 @app.route('/catalog/<string:category_name>/items')
 def listItem(category_name):
-    print category_name
     categories = session.query(Category).all()
-    items = (session.query(Category, Item).filter_by(
-            name=category_name).one())
-    print(str(items))
+    res = session.query(Category, Item).filter_by(
+            name=category_name).filter_by(
+            id=Item.category_id).all()
+    items = []
+    for _, i in res:
+        items.append(i)
     return render_template('items.html',
                            categories=categories,
-                           items=items)
+                           items=items,
+                           category_name=category_name)
 
 
 @app.route('/catalog/<string:category_name>/<string:item_title>')
@@ -56,12 +59,17 @@ def itemDescription(category_name, item_title):
         return render_template('itemdescription.html', item=item)
 
 
-@app.route('/catalog/<int:restaurant_id>/menu/JSON')
-def restaurantMenuJSON(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    items = session.query(MenuItem).filter_by(
-        restaurant_id=restaurant_id).all()
-    return jsonify(MenuItems=[i.serialize for i in items])
+@app.route('/catalog.json')
+def catalogJSON():
+    results = session.query(Category, Item).filter_by(
+                            id=Item.category_id).all()
+    print results
+    data = {}
+    for c, i in results:
+        data.append(Category=c.serialize)
+        data.append(Item=i.serialize)
+
+    return jsonify(data)
 
 
 # ADD JSON API ENDPOINT HERE

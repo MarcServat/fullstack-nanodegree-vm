@@ -23,7 +23,9 @@
             {% for category in categories %}
                 {% if category.id == item.category_id %}
                     <p>
-                        <a href="#">{{ item.title }}</a>
+                        <a href="{{ url_for('itemDescription',
+                        category_name=category.name,
+                        item_title=item.title )}}">{{ item.title }}</a>
                         ({{ category.name }})
                     </p>
                 {% endif %}

@@ -16,7 +16,7 @@ session = DBSession()
 @app.route('/')
 def home():
     categories = session.query(Category).all()
-    items = session.query(Item).all()
+    items = session.query(Item).order_by(Item.id.desc()).all()
     return render_template('index.html',
                            categories=categories,
                            items=items)
@@ -61,18 +61,17 @@ def itemDescription(category_name, item_title):
 
 @app.route('/catalog.json')
 def catalogJSON():
-    results = session.query(Category, Item).filter_by(
+    query = session.query(Category, Item).filter_by(
                             id=Item.category_id).all()
-    print results
+    res = []
     data = {}
-    for c, i in results:
-        data.append(Category=c.serialize)
-        data.append(Item=i.serialize)
+    for c, i in query:
+        data["category"] = c.serialize
+        data["category"]["items"] = i.serialize
+        res.append(data)
+        print res
 
-    return jsonify(data)
-
-
-# ADD JSON API ENDPOINT HERE
+    return jsonify(res)
 
 
 @app.route('/')

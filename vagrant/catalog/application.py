@@ -66,10 +66,7 @@ def catalogJSON():
     res = []
     data = {}
     for c, i in query:
-        data["category"] = c.serialize
-        data["category"]["items"] = i.serialize
-        res.append(data)
-        print res
+        res.append({"category": c.serialize, "items": i.serialize})
 
     return jsonify(res)
 

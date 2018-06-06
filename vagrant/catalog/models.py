@@ -15,17 +15,7 @@ class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
-    password_hash = Column(String(64))
-
-    def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
-
-    def verify_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
-
-    def generate_auth_token(self, expiration=600):
-        s = Serializer(secret_key, expires_in=expiration)
-        return s.dumps({'id': self.id})
+    email = Column(String(250), nullable=False)
 
 
 class Category(Base):

@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from database_setup import Base, Restaurant, MenuItem
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session as login_session
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///restaurantmenu.db'
 db = SQLAlchemy(app)

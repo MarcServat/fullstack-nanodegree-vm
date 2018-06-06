@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Edit Item</title>
+</head>
+<body>
+    <form   action="{{url_for('editCatalogItem')}}"
+            method='post'>
+        <p>Title:</p>
+        <input name="title" type="text" size="30" value="{editItem.title}">
+        <p>Description:</p>        
+        <input name="description" type="text" size="250" value="{editItem.description}">
+        Categories:
+        <select name="category">
+            {% for category in categories %}
+            <option value="{{category.id}}"> {{ category.name }} </option> 
+            {% endfor %}
+        </select>
+        <input type="submit" value="Edit">        
+    </form>
+</body>
+</html>

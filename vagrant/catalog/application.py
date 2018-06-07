@@ -209,29 +209,70 @@ def itemDescription(category_name, item_title):
     category = session.query(Category).filter_by(name=category_name).one()
     item = session.query(Item).filter_by(title=item_title).one()
     if item.category_id == category.id:
-        return render_template('itemdescription.html', item=item)
+        return render_template('itemdescription.html',
+                               item=item, session=login_session)
+
+
+@app.route('/catalog/create', methods=['GET', 'POST'])
+def createCatalogItem():
+    if 'username' not in login_session:
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        if request.form['title']:
+            item_title = request.form['title']
+        if request.form['description']:
+            item_description = request.form['description']
+        if request.form['category']:
+            item_category_id = request.form['category']
+
+        newItem = Item(title=item_title,
+                       description=item_description,
+                       category_id=item_category_id)
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('home'))
+    else:
+        categories = session.query(Category).all()
+        return render_template(
+            'createcatalogitem.html', categories=categories)
 
 
 @app.route('/catalog/<string:item_title>/edit',
            methods=['GET', 'POST'])
 def editCatalogItem(item_title):
     if 'username' not in login_session:
-        return redirect()
+        return redirect(url_for('home'))
+
     editedItem = session.query(Item).filter_by(title=item_title).one()
     if request.method == 'POST':
-        if request.form['name']:
+        if request.form['title']:
             editedItem.title = request.form['title']
         if request.form['description']:
-            editedItem.description = request.form['name']
+            editedItem.description = request.form['description']
         if request.form['category']:
-            editedItem.category = request.form['category']
+            editedItem.category_id = request.form['category']
         session.add(editedItem)
         session.commit()
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
+        return redirect(url_for('home'))
     else:
         categories = session.query(Category).all()
         return render_template(
             'editcatalogitem.html', categories=categories, item=editedItem)
+
+
+@app.route('/catalog/<string:item_title>/delete',
+           methods=['GET', 'POST'])
+def deleteCatalogItem(item_title):
+    if 'username' not in login_session:
+        redirect(url_for('home'))
+    itemToDelete = session.query(Item).filter_by(title=item_title).one()
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        return redirect(url_for('home'))
+    else:
+        return render_template('deleteconfirmation.html', item=itemToDelete)
 
 
 @app.route('/catalog.json')
@@ -244,18 +285,6 @@ def catalogJSON():
         res.append({"category": c.serialize, "items": i.serialize})
 
     return jsonify(res)
-
-
-@app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete',
-           methods=['GET', 'POST'])
-def deleteMenuItem(restaurant_id, menu_id):
-    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
-    if request.method == 'POST':
-        session.delete(itemToDelete)
-        session.commit()
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
-    else:
-        return render_template('deleteconfirmation.html', item=itemToDelete)
 
 
 if __name__ == '__main__':

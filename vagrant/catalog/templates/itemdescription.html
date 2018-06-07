@@ -8,5 +8,11 @@
 <body>
     <h2>{{ item.title }}</h2>
     <p>Description: {{ item.description }}</p>
+    {% if 'username' in session %}
+        <a href="{{url_for('editCatalogItem',
+        item_title=item.title)}}">Edit</a>
+        <a href="{{url_for('deleteCatalogItem',
+        item_title=item.title)}}">Delete</a>
+    {% endif %}
 </body>
 </html>

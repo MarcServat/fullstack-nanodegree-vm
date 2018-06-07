@@ -6,12 +6,12 @@
     <title>Edit Item</title>
 </head>
 <body>
-    <form   action="{{url_for('editCatalogItem')}}"
+    <form   action="{{url_for('editCatalogItem', item_title=item.title)}}"
             method='post'>
         <p>Title:</p>
-        <input name="title" type="text" size="30" value="{editItem.title}">
+        <input name="title" type="text" size="30" value="{{item.title}}">
         <p>Description:</p>        
-        <input name="description" type="text" size="250" value="{editItem.description}">
+        <input name="description" type="text" size="250" value="{{item.description}}">
         Categories:
         <select name="category">
             {% for category in categories %}

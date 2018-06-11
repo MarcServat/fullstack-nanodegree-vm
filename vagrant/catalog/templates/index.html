@@ -9,54 +9,48 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
     </script>
     <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="container">
-    <header>
-        {%if 'username' not in login_session %}
-        <div id="signinButton">
-            <span   class="g-signin"
-                    data-scope="openid email"
-                    data-clientid="517584791068-55gthfddul8inbc19tagv31g7omju3rh.apps.googleusercontent.com"
-                    data-redirecturi="postmessage"
-                    data-accesstype="offline"
-                    data-cookiepolicy="single_host_origin"
-                    data-callback="signInCallback"
-                    data-approvalprompt="force">
-            </span>
-        </div>		
-        {% else %}
-			<a href="{{url_for('gdisconnect')}}">Logout </a>
-		{% endif %}
-    </header>
-    
-    <aside>
-        <h3>Categories</h3>
-        {% for category in categories %}
-        <p>
-            <a href="{{url_for('listItem',
-                    category_name=category.name)}}">{{ category.name }}
-            </a>
-        </p>
-        {% endfor %}        
-    </aside>
-    <section>
-        {% if 'username' in login_session %}
-            <a href="{{url_for('createCatalogItem')}}">Add item</a>
-        {% endif %}
-        <h3>Latest Items</h3>
-        {% for item in items %}
+    {% include 'header.html' %}
+    <main class="list">
+        <aside class="categories">
+            <h3>Categories</h3>
             {% for category in categories %}
-                {% if category.id == item.category_id %}
-                    <p>
-                        <a href="{{url_for('itemDescription',
-                        category_name=category.name,
-                        item_title=item.title)}}">{{ item.title }}</a>
-                        ({{ category.name }})
-                    </p>
-                {% endif %}
+            <ul>
+                <li>
+                    <a class="create-link" href="{{url_for('listItem',
+                        category_name=category.name)}}">{{ category.name }}
+                    </a>
+                </li>
+            </ul>
+            {% endfor %}        
+        </aside>
+        <hr>
+        <section class="items">
+            <h3>Latest Items
+            {% if 'username' in login_session %}
+                <span class="add-item">
+                    <a href="{{url_for('createCatalogItem')}}">Add item</a>
+                </span>
+            {% endif %}                
+            </h3>
+                        
+            {% for item in items %}
+                {% for category in categories %}
+                    {% if category.id == item.category_id %}
+                        <p>
+                            <a href="{{url_for('itemDescription',
+                            category_name=category.name,
+                            item_title=item.title)}}">{{ item.title }}</a>
+                            ({{ category.name }})
+                        </p>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-    </section>
+        </section>
+    </main>
     <div id="result"></div>
     <script>
     function signInCallback(authResult) {

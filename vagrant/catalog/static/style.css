@@ -1,4 +1,44 @@
 .container {
+    font-family: Helvetica, Arial, Sans-Serif;
+}
+
+.header {
     display: flex;
-    background-color: blue;
+    justify-content: space-between;
+    background-color: #F7CA18;
+    padding: 10px;
+}
+
+.list {
+    display: flex;
+    justify-content: space-between;
+    background-color: #b2bec3;
+}
+
+.categories {
+    margin: 0px 30px;
+    width: auto;
+}
+
+hr{ 
+  
+    border: none;
+    border-left: 1px solid hsla(200, 10%, 50%,100);
+    width: 1px;       
+}
+
+.items {
+    width: 100%;
+    margin: 0px 30px;
+}
+
+.sub-title {
+    display: inline;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.add-item {
+    font-size: 15px;
+    margin-left: 10px;
 }

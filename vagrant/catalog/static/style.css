@@ -1,18 +1,25 @@
-.container {
+body {
     font-family: Helvetica, Arial, Sans-Serif;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;    
+}
+
+a {
+    text-decoration: none;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
-    background-color: #F7CA18;
-    padding: 10px;
+    padding: 10px 20px;
+    margin: 0 12px;
+    font-family: 'Fira Sans', sans-serif;
 }
 
 .list {
     display: flex;
     justify-content: space-between;
-    background-color: #b2bec3;
+    padding: 0;
 }
 
 .categories {

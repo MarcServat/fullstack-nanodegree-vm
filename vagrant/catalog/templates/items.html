@@ -1,31 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Catalog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body class="container">
-    <aside>
-        <h3>Categories</h3>
-        {% for category in categories %}
-        <p>
-            <a href="{{ url_for('listItem',
-                    category_name=category.name) }}">{{ category.name }}
-            </a>
-        {% endfor %}
-        </p>
-    </aside>
-    <section>
-        <h3>{{ category_name }} Items ({{ items | length }} Items)</h3>
-            {% for item in items %}
-                <p>
-                    <a href="{{ url_for('itemDescription',
-                                category_name=category_name,
-                                item_title=item.title )}}">{{ item.title }}</a>
-                </p>
-            {% endfor %}
-    </section>
-</body>
-</html>
+{% extends "index.html" %}
+{% block content %}
+{% include 'header.html' %}
+<div class="row">
+        <div class="col s12">
+            <div class="z-depth-5 card-panel">
+                <div class="list">
+                    <aside class="categories">
+                        <h4 class="grey-text text-darken-2">Categories</h4>
+                        {% for category in categories %}
+                        <ul>
+                            <li>
+                                <a href="{{ url_for('listItem',
+                                    category_name=category.name) }}">{{ category.name }}
+                                </a>
+                            </li>
+                        </ul>
+                        {% endfor %}
+                    </aside>
+                    <hr>    
+                    <section class="items">
+                        <h4 class="grey-text text-darken-2">{{ category_name }} Items ({{ items | length }} Items)</h4>
+                            {% for item in items %}
+                                <p>
+                                    <a href="{{ url_for('itemDescription',
+                                                category_name=category_name,
+                                                item_title=item.title )}}">{{ item.title }}</a>
+                                </p>
+                            {% endfor %}
+                    </section>
+                </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -169,24 +169,24 @@ def home():
     login_session['state'] = state
     categories = session.query(Category).all()
     items = session.query(Item).order_by(Item.id.desc()).all()
-    return render_template('index.html',
+    return render_template('main.html',
                            categories=categories,
                            items=items, STATE=state,
                            login_session=login_session)
 
 
-@app.route('/catalog/new', methods=['GET', 'POST'])
-def newItem():
-    if request.method == 'POST':
-        newItem = Item(title=request.form['title'],
-                       description=request.form['description'],
-                       category_id=request.form['category'])
-        session.add(newItem)
-        session.commit()
-        return redirect(url_for('home'))
-    else:
-        categories = session.query(Category).all()
-        return render_template('newitem.html', categories=categories)
+# @app.route('/catalog/new', methods=['GET', 'POST'])
+# def newItem():
+#     if request.method == 'POST':
+#         newItem = Item(title=request.form['title'],
+#                        description=request.form['description'],
+#                        category_id=request.form['category'])
+#         session.add(newItem)
+#         session.commit()
+#         return redirect(url_for('home'))
+#     else:
+#         categories = session.query(Category).all()
+#         return render_template('newitem.html', categories=categories)
 
 
 @app.route('/catalog/<string:category_name>/items')
@@ -272,7 +272,7 @@ def deleteCatalogItem(item_title):
         session.commit()
         return redirect(url_for('home'))
     else:
-        return render_template('deleteconfirmation.html', item=itemToDelete)
+        return render_template('deletecatalogitem.html', item=itemToDelete)
 
 
 @app.route('/catalog.json')

@@ -175,20 +175,6 @@ def home():
                            login_session=login_session)
 
 
-# @app.route('/catalog/new', methods=['GET', 'POST'])
-# def newItem():
-#     if request.method == 'POST':
-#         newItem = Item(title=request.form['title'],
-#                        description=request.form['description'],
-#                        category_id=request.form['category'])
-#         session.add(newItem)
-#         session.commit()
-#         return redirect(url_for('home'))
-#     else:
-#         categories = session.query(Category).all()
-#         return render_template('newitem.html', categories=categories)
-
-
 @app.route('/catalog/<string:category_name>/items')
 def listItem(category_name):
     categories = session.query(Category).all()

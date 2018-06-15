@@ -14,18 +14,19 @@ import requests
 
 app = Flask(__name__)
 
+# Get credentials file for login
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Catalog"
 
+# Get database connection
 engine = create_engine('sqlite:///categories.db',
                        connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# Google login
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -78,8 +79,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps(
+            'Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -110,6 +111,7 @@ def gconnect():
     return output
 
 
+# Create User if does not exists
 def createUser(login_session):
     newUser = User(username=login_session['username'], email=login_session[
                    'email'])
@@ -119,11 +121,7 @@ def createUser(login_session):
     return user.id
 
 
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
-
-
+# Use email as unique id
 def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
@@ -132,22 +130,26 @@ def getUserID(email):
         return None
 
 
+# Google Logout
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps(
+            'Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
     print login_session['username']
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' %
+    login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
     print result
+    # Remove user data
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
@@ -157,31 +159,42 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return redirect(url_for('home'))
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps(
+            'Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
 
 @app.route('/')
 def home():
+    # make a state for a login session
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
+
+    # Get all categories
     categories = session.query(Category).all()
+
+    # Get all Items order by most recents
     items = session.query(Item).order_by(Item.id.desc()).all()
     return render_template('main.html',
                            categories=categories,
                            items=items, STATE=state,
-                           login_session=login_session)
+                           session=login_session)
 
 
 @app.route('/catalog/<string:category_name>/items')
 def listItem(category_name):
+    # Get all categories
     categories = session.query(Category).all()
+
+    # Get items for a given category
     res = session.query(Category, Item).filter_by(
             name=category_name).filter_by(
             id=Item.category_id).all()
     items = []
+
+    # Take just items
     for _, i in res:
         items.append(i)
     return render_template('items.html',
@@ -192,17 +205,26 @@ def listItem(category_name):
 
 @app.route('/catalog/<string:category_name>/<string:item_title>')
 def itemDescription(category_name, item_title):
+    # Select specific category
     category = session.query(Category).filter_by(name=category_name).one()
+
+    # Select specific item
     item = session.query(Item).filter_by(title=item_title).one()
+
+    # Make sure it's what we want
     if item.category_id == category.id:
-        return render_template('itemdescription.html', item=item)
+        return render_template('itemdescription.html',
+                               item=item,
+                               session=login_session)
 
 
 @app.route('/catalog/create', methods=['GET', 'POST'])
 def createCatalogItem():
+    # Proctecting from unlogin users
     if 'username' not in login_session:
         return redirect(url_for('home'))
 
+    # Take input values and save them
     if request.method == 'POST':
         if request.form['title']:
             item_title = request.form['title']
@@ -218,6 +240,7 @@ def createCatalogItem():
         session.commit()
         return redirect(url_for('home'))
     else:
+
         categories = session.query(Category).all()
         return render_template(
             'createcatalogitem.html', categories=categories)
@@ -226,10 +249,13 @@ def createCatalogItem():
 @app.route('/catalog/<string:item_title>/edit',
            methods=['GET', 'POST'])
 def editCatalogItem(item_title):
+    # Proctecting from unlogin users
     if 'username' not in login_session:
         return redirect(url_for('home'))
 
     editedItem = session.query(Item).filter_by(title=item_title).one()
+
+    # Take input values and save them
     if request.method == 'POST':
         if request.form['title']:
             editedItem.title = request.form['title']
@@ -241,6 +267,7 @@ def editCatalogItem(item_title):
         session.commit()
         return redirect(url_for('home'))
     else:
+        # Get all categories        
         categories = session.query(Category).all()
         return render_template(
             'editcatalogitem.html', categories=categories, item=editedItem)
@@ -249,9 +276,11 @@ def editCatalogItem(item_title):
 @app.route('/catalog/<string:item_title>/delete',
            methods=['GET', 'POST'])
 def deleteCatalogItem(item_title):
+    # Proctecting from unlogin users
     if 'username' not in login_session:
         return redirect(url_for('home'))
 
+    # Get item from title
     itemToDelete = session.query(Item).filter_by(title=item_title).one()
     if request.method == 'POST':
         session.delete(itemToDelete)

@@ -195,8 +195,7 @@ def itemDescription(category_name, item_title):
     category = session.query(Category).filter_by(name=category_name).one()
     item = session.query(Item).filter_by(title=item_title).one()
     if item.category_id == category.id:
-        return render_template('itemdescription.html',
-                               item=item, session=login_session)
+        return render_template('itemdescription.html', item=item)
 
 
 @app.route('/catalog/create', methods=['GET', 'POST'])
@@ -251,7 +250,8 @@ def editCatalogItem(item_title):
            methods=['GET', 'POST'])
 def deleteCatalogItem(item_title):
     if 'username' not in login_session:
-        redirect(url_for('home'))
+        return redirect(url_for('home'))
+
     itemToDelete = session.query(Item).filter_by(title=item_title).one()
     if request.method == 'POST':
         session.delete(itemToDelete)

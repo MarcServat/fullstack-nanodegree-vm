@@ -15,7 +15,7 @@
                                 </a>
                             </li>
                         </ul>
-                        {% endfor %}        
+                        {% endfor %}
                     </aside>
                     <hr>
                     <section class="items">
@@ -24,8 +24,8 @@
                             <span class="add-item">
                                 <a href="{{url_for('createCatalogItem')}}">Add item</a>
                             </span>
-                        {% endif %}                
-                    </h4>               
+                        {% endif %}
+                    </h4>
                         {% for item in items %}
                             {% for category in categories %}
                                 {% if category.id == item.category_id %}
@@ -44,8 +44,9 @@
     </div>
 </div>
 
-    <div id="result"></div>
-    <script>
+
+
+<script>
     function signInCallback(authResult) {
     if (authResult['code']) {
         // Hide the sign-in button now that the user is authorized
@@ -60,18 +61,14 @@
         success: function(result) {
             // Handle or verify the server response if necessary.
             if (result) {
-            $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
-            setTimeout(function() {
-            window.location.href = "/";
-            }, 4000);
-            
-        } else if (authResult['error']) {
+                location.reload()
+            } else if (authResult['error']) {
         console.log('There was an error: ' + authResult['error']);
     } else {
-            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-            }
-        }
-        
+        console.log('Failed to make a server-side call. Check your configuration and console.');
+    }
+    }
+
     }); } }
-    </script>
+</script>
 {% endblock %}

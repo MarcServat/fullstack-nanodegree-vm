@@ -17,15 +17,14 @@
                         </ul>
                         {% endfor %}
                     </aside>
-                    <hr>    
                     <section class="items">
                         <h4 class="grey-text text-darken-2">{{ category_name }} Items ({{ items | length }} Items)</h4>
                             {% for item in items %}
-                                <p>
-                                    <a href="{{ url_for('itemDescription',
-                                                category_name=category_name,
-                                                item_title=item.title )}}">{{ item.title }}</a>
-                                </p>
+                            <p>
+                                <a href="{{ url_for('itemDescription',
+                                            category_name=category_name,
+                                            item_title=item.title )}}">{{ item.title }}</a>
+                            </p>
                             {% endfor %}
                     </section>
                 </div>

@@ -1,18 +1,21 @@
 <header class="header z-depth-5  teal lighten-1 white-text">
         <h3>Catalog APP</h3>
-        {%if 'username' not in login_session %}
+        {% if 'username' not in session %}
         <div id="signinButton">
-            <span   class="g-signin"
-                    data-scope="openid email"
-                    data-clientid="517584791068-55gthfddul8inbc19tagv31g7omju3rh.apps.googleusercontent.com"
-                    data-redirecturi="postmessage"
-                    data-accesstype="offline"
-                    data-cookiepolicy="single_host_origin"
-                    data-callback="signInCallback"
-                    data-approvalprompt="force">
-            </span>
+                <span   
+                        class="g-signin"
+                        data-scope="openid email"
+                        data-clientid="517584791068-55gthfddul8inbc19tagv31g7omju3rh.apps.googleusercontent.com"
+                        data-redirecturi="postmessage"
+                        data-accesstype="offline"
+                        data-cookiepolicy="single_host_origin"
+                        data-callback="signInCallback"
+                        data-approvalprompt="force">
+                </span>
         </div>		
         {% else %}
-			<a href="{{url_for('gdisconnect')}}">Logout </a>
+        <a href="{{url_for('gdisconnect')}}" class="waves-effect deep-purple lighten-2 btn">LogOut
+                <i class="material-icons right">exit_to_app</i>
+        </a>
         {% endif %}
 </header>
